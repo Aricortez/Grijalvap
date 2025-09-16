@@ -1,277 +1,218 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Control</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
-        h1 { margin-top: 20px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aceros del Grijalva - Control de Productos</title>
+  <link rel="icon" href="logo.png">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6f8;
+    }
 
-        .hidden { display: none; }
+    /* Encabezado */
+    header {
+      background: #0d47a1;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    header img {
+      height: 50px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
 
-        .menu, .form-section, .records-section {
-            margin-top: 20px;
-        }
+    /* Contenedor principal */
+    main {
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
 
-        input, select, button {
-            margin: 5px;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
+    .section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
 
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover { background-color: #0056b3; }
+    h2 {
+      color: #0d47a1;
+      margin-top: 0;
+    }
 
-        table {
-            margin: 20px auto;
-            border-collapse: collapse;
-            width: 90%;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 6px;
-            text-align: center;
-        }
-        th { background-color: #eee; }
+    /* Formularios */
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
 
-        #backButton {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 6px 12px;
-            border-radius: 6px;
-            background-color: white;
-            color: black;
-            border: 1px solid #ccc;
-            display: none;
-            cursor: pointer;
-        }
-        #backButton:hover { background-color: #f0f0f0; }
+    /* Botones */
+    button {
+      background-color: #0d47a1;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 15px;
+      margin-top: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #f9a825;
+      color: black;
+    }
 
-        canvas {
-            border: 1px solid #000;
-            margin-top: 10px;
-        }
-    </style>
+    /* Tabla de registros */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    th {
+      background: #0d47a1;
+      color: white;
+      padding: 10px;
+      text-align: left;
+    }
+    td {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+    tr:hover {
+      background: #f1f1f1;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #0d47a1;
+      color: white;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Control</h1>
 
-    <!-- Login -->
-    <div id="loginSection">
-        <input type="text" id="nombreLogin" placeholder="Nombre de la persona"><br>
-        <select id="rolLogin">
-            <option value="Jefe">Jefe</option>
-            <option value="Encargado">Encargado</option>
-            <option value="Supervisor">Supervisor</option>
-        </select><br>
-        <input type="password" id="passwordLogin" placeholder="Contraseña"><br>
-        <button onclick="login()">Ingresar</button>
+  <!-- Encabezado -->
+  <header>
+    <img src="logo.png" alt="Logo Aceros del Grijalva">
+    <h1>Aceros del Grijalva - Control de Productos</h1>
+  </header>
+
+  <main>
+    <!-- Sección de registro -->
+    <div class="section">
+      <h2>Registrar Movimiento</h2>
+      <label for="producto">Producto</label>
+      <input type="text" id="producto" placeholder="Ej. Tubería galvanizada">
+
+      <label for="cantidad">Cantidad</label>
+      <input type="number" id="cantidad" placeholder="Ej. 50">
+
+      <label for="tipo">Tipo de Movimiento</label>
+      <select id="tipo">
+        <option value="Entrada">Entrada</option>
+        <option value="Salida">Salida</option>
+      </select>
+
+      <button onclick="guardarRegistro()">Guardar Registro</button>
     </div>
 
-    <!-- Bienvenida -->
-    <div id="menuSection" class="hidden">
-        <h2 id="bienvenido"></h2>
-        <button onclick="showMateriales()">Materiales</button>
-        <button onclick="showMantenimiento()">Mantenimiento</button>
+    <!-- Sección de registros -->
+    <div class="section">
+      <h2>Historial de Registros</h2>
+      <table id="tablaRegistros">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Tipo</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
+  </main>
 
-    <!-- Materiales -->
-    <div id="materialesSection" class="hidden">
-        <h2>Registro de Materiales</h2>
-        <input type="text" id="nombreCompleto" placeholder="Nombre completo"><br>
-        <input type="text" id="material" placeholder="Material que lleva"><br>
-        <input type="text" id="sucursal" placeholder="Sucursal"><br>
-        
-        <p>Firma:</p>
-        <canvas id="canvas" width="300" height="150"></canvas><br>
-        <button onclick="clearCanvas()">Borrar firma</button><br><br>
+  <footer>
+    &copy; 2025 Aceros del Grijalva - Sistema de Control de Productos
+  </footer>
 
-        <button onclick="registrarMaterial()">Registrar</button>
-    </div>
+  <script>
+    // Cargar registros guardados
+    document.addEventListener("DOMContentLoaded", () => {
+      let registros = JSON.parse(localStorage.getItem("registros")) || [];
+      registros.forEach(r => agregarFila(r));
+    });
 
-    <!-- Registros -->
-    <div id="recordsSection" class="hidden">
-        <h2>Registros</h2>
-        <table id="tablaRegistros">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Material</th>
-                    <th>Sucursal</th>
-                    <th>Rol</th>
-                    <th>Fecha y hora</th>
-                    <th>Firma</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+    // Guardar registro en localStorage
+    function guardarRegistro() {
+      let producto = document.getElementById("producto").value;
+      let cantidad = document.getElementById("cantidad").value;
+      let tipo = document.getElementById("tipo").value;
 
-    <!-- Botón Volver -->
-    <button id="backButton" onclick="backToMenu()">&larr; Volver</button>
+      if (!producto || !cantidad) {
+        alert("Por favor, completa todos los campos");
+        return;
+      }
 
-    <script>
-        let currentUser = null;
-        let drawing = false;
-        let ctx = document.getElementById('canvas').getContext('2d');
+      let registro = {
+        fecha: new Date().toLocaleString(),
+        producto,
+        cantidad,
+        tipo
+      };
 
-        // -------- LOGIN --------
-        function login() {
-            let nombre = document.getElementById('nombreLogin').value;
-            let rol = document.getElementById('rolLogin').value;
-            let pass = document.getElementById('passwordLogin').value;
+      let registros = JSON.parse(localStorage.getItem("registros")) || [];
+      registros.push(registro);
+      localStorage.setItem("registros", JSON.stringify(registros));
 
-            if (nombre && pass) {
-                currentUser = {nombre, rol};
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('menuSection').classList.remove('hidden');
-                document.getElementById('bienvenido').innerText = "Bienvenido, " + nombre + " (" + rol + ")";
-            } else {
-                alert("Ingresa nombre y contraseña");
-            }
-        }
+      agregarFila(registro);
 
-        // -------- MATERIALS --------
-        function showMateriales() {
-            document.getElementById('menuSection').classList.add('hidden');
-            document.getElementById('materialesSection').classList.remove('hidden');
-            document.getElementById('backButton').style.display = "block";
-        }
+      document.getElementById("producto").value = "";
+      document.getElementById("cantidad").value = "";
+    }
 
-        function showMantenimiento() {
-            alert("Sección de Mantenimiento en construcción");
-        }
+    // Agregar fila en la tabla
+    function agregarFila(registro) {
+      let tbody = document.querySelector("#tablaRegistros tbody");
+      let fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${registro.fecha}</td>
+        <td>${registro.producto}</td>
+        <td>${registro.cantidad}</td>
+        <td>${registro.tipo}</td>
+      `;
+      tbody.appendChild(fila);
+    }
+  </script>
 
-        function registrarMaterial() {
-            let nombre = document.getElementById('nombreCompleto').value;
-            let material = document.getElementById('material').value;
-            let sucursal = document.getElementById('sucursal').value;
-            let firma = document.getElementById('canvas').toDataURL();
-
-            if (!nombre || !material || !sucursal) {
-                alert("Completa todos los campos");
-                return;
-            }
-
-            saveRegistro(nombre, material, sucursal, currentUser.rol, firma);
-            alert("Registro guardado correctamente");
-
-            document.getElementById('materialesSection').classList.add('hidden');
-            showRegistros();
-        }
-
-        // -------- REGISTROS --------
-        function saveRegistro(nombre, material, sucursal, rol, firma) {
-            let registros = JSON.parse(localStorage.getItem("registros")) || [];
-            let nuevo = {
-                nombre,
-                material,
-                sucursal,
-                rol,
-                fecha: new Date().toLocaleString(),
-                firma
-            };
-            registros.push(nuevo);
-            localStorage.setItem("registros", JSON.stringify(registros));
-        }
-
-        function loadRegistros() {
-            return JSON.parse(localStorage.getItem("registros")) || [];
-        }
-
-        function showRegistros() {
-            let registros = loadRegistros();
-            let tbody = document.querySelector("#tablaRegistros tbody");
-            tbody.innerHTML = "";
-            registros.forEach(r => {
-                let row = `<tr>
-                    <td>${r.nombre}</td>
-                    <td>${r.material}</td>
-                    <td>${r.sucursal}</td>
-                    <td>${r.rol}</td>
-                    <td>${r.fecha}</td>
-                    <td><img src="${r.firma}" width="100"></td>
-                </tr>`;
-                tbody.innerHTML += row;
-            });
-
-            document.getElementById('materialesSection').classList.add('hidden');
-            document.getElementById('recordsSection').classList.remove('hidden');
-            document.getElementById('backButton').style.display = "block";
-        }
-
-        // -------- VOLVER --------
-        function backToMenu() {
-            document.getElementById('materialesSection').classList.add('hidden');
-            document.getElementById('recordsSection').classList.add('hidden');
-            document.getElementById('menuSection').classList.remove('hidden');
-            document.getElementById('backButton').style.display = "none";
-        }
-
-        // -------- CANVAS FIRMA --------
-        let canvas = document.getElementById('canvas');
-
-        // Mouse
-        canvas.addEventListener('mousedown', () => drawing = true);
-        canvas.addEventListener('mouseup', () => drawing = false);
-        canvas.addEventListener('mouseleave', () => drawing = false);
-        canvas.addEventListener('mousemove', draw);
-
-        // Touch
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            drawing = true;
-            const touch = e.touches[0];
-            const rect = canvas.getBoundingClientRect();
-            ctx.beginPath();
-            ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
-        });
-
-        canvas.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            drawing = false;
-            ctx.beginPath();
-        });
-
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (!drawing) return;
-            const touch = e.touches[0];
-            const rect = canvas.getBoundingClientRect();
-            ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
-        });
-
-        function draw(e) {
-            if (!drawing) return;
-            const rect = canvas.getBoundingClientRect();
-            ctx.lineWidth = 2;
-            ctx.lineCap = "round";
-            ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-        }
-
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-    </script>
 </body>
 </html>
 
