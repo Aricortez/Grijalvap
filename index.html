@@ -1,238 +1,277 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Control</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#4CAF50">
-<style>
-* {margin:0; padding:0; box-sizing:border-box; font-family: Arial,sans-serif;}
-body {background-color:#f4f4f9; display:flex; justify-content:center; align-items:flex-start; padding:20px; color:#333;}
-.container {position:relative; background-color:#fff; padding:30px; border-radius:12px; box-shadow:0 10px 20px rgba(0,0,0,0.1); width:90%; max-width:550px; margin-bottom:50px;}
-h1, h2 {text-align:center; margin-bottom:20px; color:#4a4a4a;}
-button {padding:12px; width:100%; border:none; border-radius:8px; cursor:pointer; font-size:16px; transition:0.3s;}
-button:hover {opacity:0.9;}
-#loginButton {background-color:#4CAF50; color:white;}
-form {display:none; flex-direction:column; gap:15px;}
-input, select {padding:10px; border-radius:6px; border:1px solid #ccc; font-size:14px; width:100%;}
-.menu {display:none; flex-direction:column; gap:15px; margin-top:20px;}
-.menu button {background-color:#2196F3; color:white;}
-.active-user {text-align:center; margin:15px 0; font-weight:bold; color:#ff5722;}
-.error {color:red; text-align:center;}
-table {width:100%; border-collapse: collapse; margin-top:15px; word-break:break-word;}
-th, td {border:1px solid #ccc; padding:8px; text-align:center;}
-th {background-color:#f0f0f0;}
-#viewRecordsBtn {margin-top:10px; display:none;}
-#backButton {
-    position:absolute; top:10px; left:10px; padding:6px 12px; border-radius:6px;
-    background-color:white; color:black; border:1px solid #ccc; display:none;
-    width:auto; font-size:14px; cursor:pointer;
-}
-#backButton:hover {background-color:#f0f0f0;}
-#signatureContainer {display:none; margin-top:20px; text-align:center;}
-#signaturePad {border:1px solid #ccc; cursor:crosshair; width:100%; height:150px;}
-@media (max-width: 500px) {
-    h1, h2 {font-size:1.5rem;}
-    button {font-size:14px; padding:10px;}
-    input, select {font-size:14px; padding:8px;}
-    #signaturePad {height:120px;}
-    table th, table td {font-size:12px; padding:6px;}
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        h1 { margin-top: 20px; }
+
+        .hidden { display: none; }
+
+        .menu, .form-section, .records-section {
+            margin-top: 20px;
+        }
+
+        input, select, button {
+            margin: 5px;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover { background-color: #0056b3; }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 90%;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 6px;
+            text-align: center;
+        }
+        th { background-color: #eee; }
+
+        #backButton {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+            display: none;
+            cursor: pointer;
+        }
+        #backButton:hover { background-color: #f0f0f0; }
+
+        canvas {
+            border: 1px solid #000;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
     <h1>Control</h1>
-    <button id="loginButton" onclick="showLoginForm()">Ingresar</button>
 
-    <form id="loginForm" onsubmit="return authenticate(event)">
-        <input type="text" id="personName" placeholder="Nombre completo" required>
-        <select id="role" required>
-            <option value="" disabled selected>Seleccione rol</option>
+    <!-- Login -->
+    <div id="loginSection">
+        <input type="text" id="nombreLogin" placeholder="Nombre de la persona"><br>
+        <select id="rolLogin">
             <option value="Jefe">Jefe</option>
             <option value="Encargado">Encargado</option>
             <option value="Supervisor">Supervisor</option>
-        </select>
-        <input type="password" id="password" placeholder="Contraseña" required>
-        <button type="submit" style="background-color:#4CAF50; color:white;">Entrar</button>
-        <div class="error" id="errorMsg"></div>
-    </form>
-
-    <div class="active-user" id="activeUser"></div>
-
-    <div class="menu" id="menu">
-        <button onclick="showMaterialForm()">Materiales</button>
-        <button>Mantenimiento</button>
+        </select><br>
+        <input type="password" id="passwordLogin" placeholder="Contraseña"><br>
+        <button onclick="login()">Ingresar</button>
     </div>
 
-    <form id="materialForm" onsubmit="return submitMaterial(event)">
-        <h2>Registro de Materiales</h2>
-        <input type="text" id="fullName" placeholder="Nombre completo" required>
-        <input type="text" id="material" placeholder="Material que llevará" required>
-        <input type="text" id="dateTime" placeholder="Fecha y hora" readonly>
-        <input type="text" id="branch" placeholder="Sucursal" required>
-        <button type="submit" style="background-color:#4CAF50; color:white;">Registrar</button>
-    </form>
+    <!-- Bienvenida -->
+    <div id="menuSection" class="hidden">
+        <h2 id="bienvenido"></h2>
+        <button onclick="showMateriales()">Materiales</button>
+        <button onclick="showMantenimiento()">Mantenimiento</button>
+    </div>
 
+    <!-- Materiales -->
+    <div id="materialesSection" class="hidden">
+        <h2>Registro de Materiales</h2>
+        <input type="text" id="nombreCompleto" placeholder="Nombre completo"><br>
+        <input type="text" id="material" placeholder="Material que lleva"><br>
+        <input type="text" id="sucursal" placeholder="Sucursal"><br>
+        
+        <p>Firma:</p>
+        <canvas id="canvas" width="300" height="150"></canvas><br>
+        <button onclick="clearCanvas()">Borrar firma</button><br><br>
+
+        <button onclick="registrarMaterial()">Registrar</button>
+    </div>
+
+    <!-- Registros -->
+    <div id="recordsSection" class="hidden">
+        <h2>Registros</h2>
+        <table id="tablaRegistros">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Material</th>
+                    <th>Sucursal</th>
+                    <th>Rol</th>
+                    <th>Fecha y hora</th>
+                    <th>Firma</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Botón Volver -->
     <button id="backButton" onclick="backToMenu()">&larr; Volver</button>
 
-    <div id="signatureContainer">
-        <h2>Firma del responsable</h2>
-        <canvas id="signaturePad"></canvas><br>
-        <button onclick="clearSignature()" style="width:48%; display:inline-block;">Borrar</button>
-        <button onclick="saveSignature()" style="width:48%; display:inline-block;">Guardar Firma</button>
-    </div>
+    <script>
+        let currentUser = null;
+        let drawing = false;
+        let ctx = document.getElementById('canvas').getContext('2d');
 
-    <div id="recordsTableContainer">
-        <div id="recordsTable"></div>
-        <button id="viewRecordsBtn" onclick="viewRecords()">Ver todos los registros</button>
-    </div>
-</div>
+        // -------- LOGIN --------
+        function login() {
+            let nombre = document.getElementById('nombreLogin').value;
+            let rol = document.getElementById('rolLogin').value;
+            let pass = document.getElementById('passwordLogin').value;
 
-<script>
-const roles = [
-    { role: 'Jefe', password: '1234' },
-    { role: 'Encargado', password: 'abcd' },
-    { role: 'Supervisor', password: 'pass' },
-];
+            if (nombre && pass) {
+                currentUser = {nombre, rol};
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('menuSection').classList.remove('hidden');
+                document.getElementById('bienvenido').innerText = "Bienvenido, " + nombre + " (" + rol + ")";
+            } else {
+                alert("Ingresa nombre y contraseña");
+            }
+        }
 
-let records = JSON.parse(localStorage.getItem('records')) || [];
-let currentUser = { name:'', role:'' };
-let tempRecord = null;
+        // -------- MATERIALS --------
+        function showMateriales() {
+            document.getElementById('menuSection').classList.add('hidden');
+            document.getElementById('materialesSection').classList.remove('hidden');
+            document.getElementById('backButton').style.display = "block";
+        }
 
-function showLoginForm() {
-    document.getElementById('loginButton').style.display = 'none';
-    document.getElementById('loginForm').style.display = 'flex';
-}
+        function showMantenimiento() {
+            alert("Sección de Mantenimiento en construcción");
+        }
 
-function authenticate(event) {
-    event.preventDefault();
-    const personName = document.getElementById('personName').value;
-    const role = document.getElementById('role').value;
-    const password = document.getElementById('password').value;
-    const user = roles.find(u => u.role === role && u.password === password);
-    if(user){
-        currentUser = { name:personName, role:role };
-        document.getElementById('activeUser').textContent = `Bienvenido, ${personName} (${role})`;
-        document.getElementById('menu').style.display = 'flex';
-        document.getElementById('loginForm').style.display = 'none';
-        document.getElementById('errorMsg').textContent = '';
-    } else {
-        document.getElementById('errorMsg').textContent = 'Rol o contraseña incorrectos';
-    }
-}
+        function registrarMaterial() {
+            let nombre = document.getElementById('nombreCompleto').value;
+            let material = document.getElementById('material').value;
+            let sucursal = document.getElementById('sucursal').value;
+            let firma = document.getElementById('canvas').toDataURL();
 
-function showMaterialForm() {
-    document.getElementById('materialForm').style.display = 'flex';
-    document.getElementById('menu').style.display = 'none';
-    document.getElementById('viewRecordsBtn').style.display = 'none';
-    document.getElementById('backButton').style.display = 'block';
-    document.getElementById('recordsTable').innerHTML = '';
-    document.getElementById('fullName').value = '';
-    document.getElementById('material').value = '';
-    document.getElementById('branch').value = '';
-    document.getElementById('dateTime').value = new Date().toLocaleString();
-}
+            if (!nombre || !material || !sucursal) {
+                alert("Completa todos los campos");
+                return;
+            }
 
-function submitMaterial(event) {
-    event.preventDefault();
-    const fullName = document.getElementById('fullName').value;
-    const material = document.getElementById('material').value;
-    const dateTime = document.getElementById('dateTime').value;
-    const branch = document.getElementById('branch').value;
-    if(fullName.trim()===""){ alert("Ingrese nombre completo"); return; }
-    tempRecord = { fullName, role: currentUser.role, material, dateTime, branch };
-    document.getElementById('materialForm').style.display = 'none';
-    document.getElementById('signatureContainer').style.display = 'block';
-}
+            saveRegistro(nombre, material, sucursal, currentUser.rol, firma);
+            alert("Registro guardado correctamente");
 
-// Canvas firma
-const canvas = document.getElementById('signaturePad');
-const ctx = canvas.getContext('2d');
-let drawing = false;
+            document.getElementById('materialesSection').classList.add('hidden');
+            showRegistros();
+        }
 
-// Mouse
-canvas.addEventListener('mousedown',()=>drawing=true);
-canvas.addEventListener('mouseup',()=>drawing=false);
-canvas.addEventListener('mouseleave',()=>drawing=false);
-canvas.addEventListener('mousemove',draw);
+        // -------- REGISTROS --------
+        function saveRegistro(nombre, material, sucursal, rol, firma) {
+            let registros = JSON.parse(localStorage.getItem("registros")) || [];
+            let nuevo = {
+                nombre,
+                material,
+                sucursal,
+                rol,
+                fecha: new Date().toLocaleString(),
+                firma
+            };
+            registros.push(nuevo);
+            localStorage.setItem("registros", JSON.stringify(registros));
+        }
 
-// Touch
-canvas.addEventListener('touchstart',(e)=>{
-    e.preventDefault();
-    drawing=true;
-    const touch = e.touches[0];
-    const rect = canvas.getBoundingClientRect();
-    ctx.beginPath();
-    ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
-});
-canvas.addEventListener('touchend',(e)=>{ e.preventDefault(); drawing=false; ctx.beginPath(); });
-canvas.addEventListener('touchmove',(e)=>{
-    e.preventDefault();
-    if(!drawing) return;
-    const touch = e.touches[0];
-    const rect = canvas.getBoundingClientRect();
-    ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
-});
+        function loadRegistros() {
+            return JSON.parse(localStorage.getItem("registros")) || [];
+        }
 
-function draw(e){
-    if(!drawing) return;
-    const rect = canvas.getBoundingClientRect();
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = 'black';
-    ctx.lineTo(e.clientX-rect.left, e.clientY-rect.top);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(e.clientX-rect.left, e.clientY-rect.top);
-}
+        function showRegistros() {
+            let registros = loadRegistros();
+            let tbody = document.querySelector("#tablaRegistros tbody");
+            tbody.innerHTML = "";
+            registros.forEach(r => {
+                let row = `<tr>
+                    <td>${r.nombre}</td>
+                    <td>${r.material}</td>
+                    <td>${r.sucursal}</td>
+                    <td>${r.rol}</td>
+                    <td>${r.fecha}</td>
+                    <td><img src="${r.firma}" width="100"></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
 
-function clearSignature(){ ctx.clearRect(0,0,canvas.width,canvas.height); }
+            document.getElementById('materialesSection').classList.add('hidden');
+            document.getElementById('recordsSection').classList.remove('hidden');
+            document.getElementById('backButton').style.display = "block";
+        }
 
-function saveSignature(){
-    tempRecord.signature = canvas.toDataURL();
-    records.push(tempRecord);
-    localStorage.setItem('records', JSON.stringify(records));
-    tempRecord = null;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    document.getElementById('signatureContainer').style.display = 'none';
-    document.getElementById('viewRecordsBtn').style.display = 'block';
-    alert("Registro con firma completado!");
-}
+        // -------- VOLVER --------
+        function backToMenu() {
+            document.getElementById('materialesSection').classList.add('hidden');
+            document.getElementById('recordsSection').classList.add('hidden');
+            document.getElementById('menuSection').classList.remove('hidden');
+            document.getElementById('backButton').style.display = "none";
+        }
 
-function backToMenu(){
-    document.getElementById('materialForm').style.display='none';
-    document.getElementById('signatureContainer').style.display='none';
-    document.getElementById('recordsTable').innerHTML='';
-    document.getElementById('menu').style.display='flex';
-    document.getElementById('backButton').style.display='none';
-    document.getElementById('viewRecordsBtn').style.display='block';
-}
+        // -------- CANVAS FIRMA --------
+        let canvas = document.getElementById('canvas');
 
-function viewRecords(){
-    if(records.length===0){alert('No hay registros'); return;}
-    let html=`<h2>Todos los Registros</h2><table>
-        <tr><th>Nombre</th><th>Rol</th><th>Material</th><th>Sucursal</th><th>Fecha y hora</th><th>Firma</th></tr>`;
-    records.forEach(r=>{
-        html+=`<tr>
-            <td>${r.fullName}</td>
-            <td>${r.role}</td>
-            <td>${r.material}</td>
-            <td>${r.branch}</td>
-            <td>${r.dateTime}</td>
-            <td>${r.signature?`<img src="${r.signature}" width="100">`:'No firmó'}</td>
-        </tr>`;
-    });
-    html+=`</table>`;
-    document.getElementById('recordsTable').innerHTML=html;
-    document.getElementById('backButton').style.display='block';
-    document.getElementById('viewRecordsBtn').style.display='none';
-    document.getElementById('menu').style.display='none';
-}
-</script>
+        // Mouse
+        canvas.addEventListener('mousedown', () => drawing = true);
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mouseleave', () => drawing = false);
+        canvas.addEventListener('mousemove', draw);
+
+        // Touch
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            drawing = true;
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            ctx.beginPath();
+            ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            drawing = false;
+            ctx.beginPath();
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!drawing) return;
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        });
+
+        function draw(e) {
+            if (!drawing) return;
+            const rect = canvas.getBoundingClientRect();
+            ctx.lineWidth = 2;
+            ctx.lineCap = "round";
+            ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
 </body>
 </html>
+
